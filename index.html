@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>L' Atelier Marcus</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,400&family=Outfit:wght@300;400;500;600&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#1a0e05;--cream:#fdf8f2;--caramel:#c87941;--gold:#e8a84c;--muted:#9a7a5c;--white:#fff;--green:#2a6049;}
+body{font-family:'Outfit',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh}
+
+.hero{background:var(--ink);color:var(--cream);padding:36px 24px 32px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(200,121,65,.35),transparent);pointer-events:none}
+.hero-sub{font-size:.75rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:2.6rem;font-weight:600}
+.hero-title em{color:var(--gold);font-style:italic}
+.hero-desc{margin-top:8px;font-size:.85rem;color:#c8b09a;font-weight:300}
+
+.wrap{max-width:860px;margin:0 auto;padding:28px 16px 140px}
+
+.info-banner{display:flex;gap:10px;flex-wrap:wrap;background:#fff8ee;border:2px solid #f0d8b0;border-radius:14px;padding:12px 16px;margin-bottom:20px}
+.info-pill{display:flex;align-items:center;gap:6px;font-size:.82rem;color:#7a5530;font-weight:500}
+.info-divider{width:1px;background:#e8ccaa}
+
+.name-row{display:flex;align-items:center;gap:12px;background:var(--white);border:2px solid #eeddd0;border-radius:14px;padding:14px 18px;margin-bottom:20px}
+.name-row label{font-size:.75rem;color:var(--muted);white-space:nowrap;letter-spacing:.04em;text-transform:uppercase}
+.name-row input{flex:1;border:none;outline:none;font-family:'Outfit',sans-serif;font-size:1rem;color:var(--ink);background:transparent;font-weight:500}
+.name-row input::placeholder{color:#d4bca8}
+
+/* Fidélité */
+
+.credit-bar{background:var(--white);border:2px solid #eeddd0;border-radius:14px;padding:14px 18px;margin-bottom:20px;display:none}
+.credit-bar.show{display:block}
+.credit-top{display:flex;align-items:center;justify-content:space-between}
+.credit-label{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.credit-amount{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:600}
+.credit-amount.pos{color:var(--green)}
+.credit-amount.neg{color:#c04040}
+.credit-sub{font-size:.75rem;color:var(--muted);margin-top:3px}
+
+.fidelity-bar{background:var(--white);border:2px solid #eeddd0;border-radius:14px;padding:14px 18px;margin-bottom:20px;display:none}
+.fidelity-bar.show{display:block}
+.fid-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.fid-label{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.fid-count{font-weight:700;color:var(--caramel);font-size:.9rem}
+.fid-track{height:8px;background:#f0e6da;border-radius:10px;overflow:hidden}
+.fid-fill{height:100%;background:linear-gradient(90deg,var(--caramel),var(--gold));border-radius:10px;transition:width .4s ease}
+.fid-msg{margin-top:6px;font-size:.78rem;color:var(--muted)}
+.fid-free{background:#fff5e0;border:1.5px solid var(--gold);border-radius:10px;padding:8px 12px;margin-top:8px;font-size:.82rem;color:#7a5000;display:none}
+/* Suivi commande */
+.tracking-section{background:var(--white);border:2px solid #eeddd0;border-radius:14px;padding:18px 20px;margin-bottom:20px;display:none}
+.tracking-section.show{display:block}
+.tracking-title{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:14px}
+.tracking-steps{display:flex;flex-direction:column;gap:0}
+.tstep{display:flex;align-items:flex-start;gap:12px;padding:8px 0;position:relative}
+.tstep::before{content:'';position:absolute;left:15px;top:32px;bottom:-8px;width:2px;background:#f0e6da}
+.tstep:last-child::before{display:none}
+.tstep-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;background:#f0e6da;color:var(--muted);border:2px solid #e8d4c0}
+.tstep.done .tstep-icon{background:var(--green);color:#fff;border-color:var(--green)}
+.tstep.active .tstep-icon{background:var(--caramel);color:#fff;border-color:var(--caramel)}
+.tstep-label{font-size:.88rem;font-weight:500;margin-top:5px}
+.tstep.done .tstep-label{color:var(--green)}
+.tstep.active .tstep-label{color:var(--caramel);font-weight:600}
+.tstep.inactive .tstep-label{color:#cbb89a}
+.tstep-sub{font-size:.75rem;color:var(--muted);margin-top:1px}
+.balance-due{background:#fff0f0;border:2px solid #f0c0c0;border-radius:10px;padding:10px 14px;margin-top:10px;font-size:.85rem;color:#a03030;display:none}
+.balance-due.show{display:block}
+
+.fid-free.show{display:block}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-bottom:14px}
+
+.card{background:var(--white);border-radius:14px;overflow:hidden;border:2px solid transparent;transition:all .2s}
+.card:hover{border-color:var(--gold);box-shadow:0 8px 28px rgba(200,121,65,.13)}
+.card.sel{border-color:var(--caramel);background:#fffaf5}
+.card.out{opacity:.55;pointer-events:none}
+.card-img{width:100%;height:160px;object-fit:cover;background:#f5ead8;border-radius:0}
+.card-img-placeholder{width:100%;height:160px;background:linear-gradient(135deg,#f5ead8,#eeddd0);display:flex;align-items:center;justify-content:center;font-size:3rem;border-radius:0}
+.card-body{padding:16px 16px 14px}
+.cname{font-family:'Cormorant Garamond',serif;font-size:1.08rem;font-weight:600;margin-bottom:4px}
+.cdesc{font-size:.78rem;color:var(--muted);line-height:1.5;margin-bottom:10px}
+.cbot{display:flex;align-items:center;justify-content:space-between}
+.cprice{font-weight:600;color:var(--caramel);font-size:.95rem}
+.stock-badge{font-size:.72rem;padding:2px 8px;border-radius:20px;font-weight:600}
+.stock-ok{background:#e8f5ee;color:#2a6049}
+.stock-low{background:#fff3cd;color:#7a5c00}
+.stock-out{background:#fde8e8;color:#8b2020}
+.qty{display:flex;align-items:center;gap:8px;margin-top:8px}
+.qb{width:28px;height:28px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;transition:background .15s}
+.qb.minus{background:#f0e6da;color:var(--ink)}.qb.minus:hover{background:#ddd0c4}
+.qb.plus{background:var(--caramel);color:#fff}.qb.plus:hover{background:var(--ink)}
+.qb:disabled{opacity:.3;cursor:not-allowed}
+.qn{font-weight:600;min-width:18px;text-align:center}
+
+.date-box,.note-box{background:var(--white);border:2px solid #eeddd0;border-radius:14px;padding:14px 18px;margin-bottom:12px}
+.box-label{display:block;font-size:.75rem;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin-bottom:10px}
+.date-btns{display:flex;gap:8px;flex-wrap:wrap}
+.dbtn{padding:8px 16px;border-radius:30px;border:2px solid #eeddd0;background:transparent;font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .15s;color:var(--muted)}
+.dbtn:hover{border-color:var(--gold);color:var(--caramel)}
+.dbtn.active{border-color:var(--caramel);background:#fff5eb;color:var(--caramel)}
+.note-box textarea{width:100%;border:none;resize:none;outline:none;font-family:'Outfit',sans-serif;font-size:.88rem;color:var(--ink);background:transparent;min-height:60px}
+
+.bar{position:fixed;bottom:0;left:0;right:0;background:var(--ink);padding:14px 22px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 -4px 30px rgba(26,14,5,.35);z-index:100;animation:up .3s ease}
+@keyframes up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.bar-left{display:flex;flex-direction:column;gap:2px}
+.bar-qty{font-size:.75rem;color:var(--gold)}
+.bar-total{font-family:'Cormorant Garamond',serif;font-size:1.35rem;color:var(--cream)}
+.btn-order{background:var(--gold);color:var(--ink);border:none;padding:12px 26px;border-radius:40px;font-family:'Outfit',sans-serif;font-weight:600;font-size:.92rem;cursor:pointer;transition:all .2s}
+.btn-order:hover{background:var(--caramel);color:#fff;transform:scale(1.03)}
+.btn-order:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+.success{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;gap:14px;text-align:center;padding:40px 20px}
+.success.show{display:flex}
+.s-icon{font-size:4rem;animation:pop .4s cubic-bezier(.175,.885,.32,1.275)}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+.s-title{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--green)}
+.s-sub{color:var(--muted);max-width:340px;line-height:1.7;font-size:.9rem}
+.btn-again{margin-top:10px;background:var(--ink);color:var(--cream);border:none;padding:12px 28px;border-radius:40px;font-family:'Outfit',sans-serif;font-weight:500;font-size:.9rem;cursor:pointer}
+.btn-again:hover{background:var(--caramel)}
+.fid-success{background:#fff8e0;border:2px solid var(--gold);border-radius:14px;padding:14px 18px;margin-top:4px;font-size:.88rem;color:#7a5000;max-width:340px}
+.lbx{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;display:none;align-items:center;justify-content:center;flex-direction:column}
+.lbx.show{display:flex}
+.lbx img{max-width:95vw;max-height:85vh;border-radius:10px;object-fit:contain}
+.lbx-close{position:absolute;top:18px;right:18px;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:1.4rem;width:40px;height:40px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.lbx-name{color:rgba(255,255,255,.7);font-size:.88rem;margin-top:12px}
+</style>
+</head>
+<body>
+<div class="lbx" id="lbx">
+  <button class="lbx-close" id="lbx-close">×</button>
+  <img id="lbx-img" src=""/>
+  <div class="lbx-name" id="lbx-name"></div>
+</div>
+<div id="main">
+  <div class="hero">
+    <div class="hero-sub">Artisan · Fait maison</div>
+    <h1 class="hero-title">L'atelier</em> Marcus</h1>
+    <p class="hero-desc">Choisissez vos cookies, on prépare tout avec amour 🍪</p>
+  </div>
+  <div class="wrap">
+    <div class="info-banner">
+      <div class="info-pill">🚚 Livraison mer · jeu · ven</div>
+      <div class="info-divider"></div>
+      <div class="info-pill">⏰ Commande 24h à l'avance</div>
+    </div>
+    <div class="name-row">
+      <label>Prénom</label>
+      <input id="inp-name" type="text" placeholder="Votre prénom…" oninput="onNameInput()"/>
+    </div>
+    <!-- Fidélité -->
+    <div class="fidelity-bar" id="fid-bar">
+      <div class="fid-top">
+        <span class="fid-label">🎁 Carte de fidélité</span>
+        <span class="fid-count" id="fid-count"></span>
+      </div>
+      <div class="fid-track"><div class="fid-fill" id="fid-fill"></div></div>
+      <div class="fid-msg" id="fid-msg"></div>
+      <div class="fid-free" id="fid-free">🎉 Vous avez droit à <strong>1 cookie offert</strong> sur cette commande !</div>
+    </div>
+    <!-- Crédit prépayé -->
+    <div class="credit-bar" id="credit-bar">
+      <div class="credit-top">
+        <span class="credit-label">💳 Votre solde</span>
+        <span class="credit-amount" id="credit-amount">0.00 €</span>
+      </div>
+      <div class="credit-sub" id="credit-sub"></div>
+    </div>
+    <!-- Suivi commande -->
+    <div class="tracking-section" id="tracking-section">
+      <div class="tracking-title">📦 Suivi de votre dernière commande</div>
+      <div id="tracking-order-info" style="font-size:.82rem;color:var(--muted);margin-bottom:12px"></div>
+      <div class="tracking-steps" id="tracking-steps"></div>
+      <div class="balance-due" id="balance-due"></div>
+    </div>
+    <div class="grid" id="cookie-grid"></div>
+    <div class="date-box">
+      <label class="box-label">📅 Jour de livraison</label>
+      <div class="date-btns" id="date-btns"></div>
+    </div>
+    <div class="note-box">
+      <label class="box-label">Note / instructions</label>
+      <textarea id="inp-note" placeholder="Allergie, sans emballage, message…"></textarea>
+    </div>
+  </div>
+  <div class="bar" id="bar" style="display:none">
+    <div class="bar-left">
+      <span class="bar-qty" id="bar-qty"></span>
+      <span class="bar-total" id="bar-total"></span>
+    </div>
+    <button class="btn-order" id="btn-order">Commander →</button>
+  </div>
+</div>
+
+<div class="success" id="success">
+  <div class="s-icon">🍪</div>
+  <div class="s-title">Commande envoyée !</div>
+  <p class="s-sub" id="s-sub"></p>
+  <div class="fid-success" id="s-fid" style="display:none"></div>
+  <button class="btn-again" onclick="resetForm()">Passer une autre commande</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, push, onValue, get, set, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const FC = {
+  apiKey:"AIzaSyBAWi_kp4jPUqvWBRCpg9fQHuv3qH4Sb_E",
+  authDomain:"cookies-c386b.firebaseapp.com",
+  databaseURL:"https://cookies-c386b-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:"cookies-c386b",
+  storageBucket:"cookies-c386b.firebasestorage.app",
+  messagingSenderId:"101320641505",
+  appId:"1:101320641505:web:7c972c7c7be5e968e120a0"
+};
+const app = initializeApp(FC);
+const db  = getDatabase(app);
+
+const DAY_FR   = ["dim","lun","mar","mer","jeu","ven","sam"];
+const MONTH_FR = ["jan","fév","mar","avr","mai","juin","juil","aoû","sep","oct","nov","déc"];
+function fmtDate(d){return `${DAY_FR[d.getDay()]} ${d.getDate()} ${MONTH_FR[d.getMonth()]}`}
+function getMonday(d){const dt=new Date(d),day=dt.getDay();dt.setDate(dt.getDate()+(day===0?-6:1-day));dt.setHours(0,0,0,0);return dt}
+let extraDates=[];
+let closedDays=[];
+
+onValue(ref(db,"closedDays"), snap=>{
+  closedDays=snap.exists()?Object.keys(snap.val()).map(Number):[];
+  renderDates(getDeliveryDates());
+});
+
+onValue(ref(db,"extraDates"), snap=>{
+  extraDates=snap.exists()?Object.values(snap.val()).map(v=>v.date):[];
+  renderDates(getDeliveryDates());
+});
+
+function getDeliveryDates(){
+  const now=new Date(),cutoff=new Date(now.getTime()+24*3600*1000),monday=getMonday(now);
+  // Jours fixes (2=mer, 3=jeu, 4=ven) moins les jours fermés
+  const fixedOffsets=[2,3,4].filter(o=>!closedDays.includes(o));
+  const tw=fixedOffsets.map(o=>{const d=new Date(monday);d.setDate(monday.getDate()+o);d.setHours(12,0,0,0);return d});
+  const nm=new Date(monday);nm.setDate(monday.getDate()+7);
+  const nw=fixedOffsets.map(o=>{const d=new Date(nm);d.setDate(nm.getDate()+o);d.setHours(12,0,0,0);return d});
+  // Dates occasionnelles
+  const extras=extraDates.map(s=>new Date(s+"T12:00:00")).filter(d=>d>cutoff);
+  // Fusionner, dédupliquer, trier
+  const allDates=[...tw,...nw,...extras].filter(d=>d>cutoff);
+  const seen=new Set();
+  const unique=allDates.filter(d=>{const k=d.toISOString().slice(0,10);if(seen.has(k))return false;seen.add(k);return true;});
+  unique.sort((a,b)=>a-b);
+  return unique.slice(0,6);
+}
+
+let cookies=[], cart={}, selectedDate=null, clientName="";
+let fidData=null; // {total, free}
+
+// ── Catalogue temps réel ──────────────────────────────────────────────────
+onValue(ref(db,"cookies"), snap=>{
+  cookies = [];
+
+  snap.forEach(child => {
+    const val = child.val();
+    console.log("COOKIE DB:", val.name); // 👈 IMPORTANT
+    cookies.push({_key:child.key, ...val});
+  });
+
+  console.log("FINAL:", cookies);
+
+  renderGrid();
+});
+
+function renderGrid(){
+  const grid=document.getElementById("cookie-grid");
+  if(!cookies.length){grid.innerHTML='<p style="color:var(--muted);font-size:.9rem">Aucun article disponible pour l\'instant.</p>';return;}
+  grid.innerHTML=cookies.map(c=>{
+    const q=cart[c._key]||0;
+    const stockLabel = c.stock===undefined ? '' :
+      c.stock<=0 ? '<span class="stock-badge stock-out">Épuisé</span>' :
+      c.stock<=3 ? `<span class="stock-badge stock-low">Plus que ${c.stock}</span>` :
+      `<span class="stock-badge stock-ok">${c.stock} dispo</span>`;
+    const imgEl = c.imageUrl
+  ? `<div class="card-img" style="overflow:hidden;cursor:zoom-in"
+       onclick="openLbx('${c.imageUrl}','${(c.name||'').replace(/'/g,"\\'")}')">
+       <img src="${c.imageUrl}" 
+            alt="${c.name||''}" 
+            style="width:100%;height:100%;object-fit:cover;object-position:center;transform:scale(${c.cropZoom||1});transform-origin:center"
+            onerror="this.parentElement.innerHTML='<div class=card-img-placeholder>${c.emoji||'🍪'}</div>'">
+     </div>`
+  : `<div class="card-img-placeholder">${c.emoji||'🍪'}</div>`;
+    const outOfStock = c.stock !== undefined && c.stock <= 0;
+    const maxQty = c.stock !== undefined ? c.stock : 99;
+    return `<div class="card${q>0?' sel':''}${outOfStock?' out':''}" id="card-${c._key}">
+      ${imgEl}
+      <div class="card-body">
+        <div class="cname">${c.emoji||''} ${c.name}</div>
+        <div class="cdesc">${c.desc||''}</div>
+        <div class="cbot">
+          <span class="cprice">${Number(c.price || 0).toFixed(2)} €</span>
+          ${stockLabel}
+        </div>
+        ${!outOfStock?`<div class="qty">
+          <button class="qb minus" onclick="changeQty('${c._key}',-1)" ${q===0?'disabled':''}>−</button>
+          <span class="qn" id="qty-${c._key}">${q}</span>
+          <button class="qb plus" onclick="changeQty('${c._key}',1)" ${q>=maxQty?'disabled':''}>+</button>
+        </div>`:'<div style="margin-top:8px;font-size:.78rem;color:#a05050">Non disponible</div>'}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+// ── Dates ─────────────────────────────────────────────────────────────────
+function renderDates(dates){
+  const dc=document.getElementById("date-btns");
+  dc.innerHTML="";
+  dates.forEach(d=>{
+    const btn=document.createElement("button");
+    btn.className="dbtn"; btn.textContent=fmtDate(d); btn.dataset.iso=d.toISOString();
+    btn.onclick=()=>{selectedDate=d;document.querySelectorAll(".dbtn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");updateBar()};
+    dc.appendChild(btn);
+  });
+}
+renderDates(getDeliveryDates());
+
+// ── Fidélité ──────────────────────────────────────────────────────────────
+let fidTimeout=null;
+window.onNameInput=function(){
+  clientName=document.getElementById("inp-name").value.trim().toLowerCase();
+  clearTimeout(fidTimeout);
+  if(clientName.length<2){document.getElementById("fid-bar").classList.remove("show");document.getElementById("credit-bar").classList.remove("show");fidData=null;return;}
+  fidTimeout=setTimeout(()=>{loadFidelity();loadCredit();loadTracking();},600);
+};
+
+async function loadCredit(){
+  const snap=await get(ref(db,`credits/${sanitizeKey(clientName)}`));
+  const bar=document.getElementById("credit-bar");
+  if(snap.exists()){
+    const c=snap.val();
+    const s=c.solde||0;
+    bar.classList.add("show");
+    const el=document.getElementById("credit-amount");
+    el.textContent=(s>=0?"+":"")+s.toFixed(2)+" €";
+    el.className="credit-amount "+(s>0?"pos":s<0?"neg":"");
+    document.getElementById("credit-sub").textContent=s<0?"Solde négatif — à régulariser lors du prochain paiement":s>0?"Sera déduit de votre commande":"Solde épuisé";
+  } else {
+    bar.classList.remove("show");
+  }
+}
+
+async function loadTracking(){
+  const key=sanitizeKey(clientName);
+  // Get last order for this client from Firebase
+  const snap=await get(ref(db,"orders"));
+  let lastOrder=null;
+  snap.forEach(c=>{
+    const o=c.val();
+    const oKey=o.clientKey||sanitizeKey(o.client||"");
+    if(oKey===key){
+      if(!lastOrder||o.ts>lastOrder.ts) lastOrder={...o,_key:c.key};
+    }
+  });
+  const section=document.getElementById("tracking-section");
+  if(!lastOrder){section.classList.remove("show");return;}
+  section.classList.add("show");
+
+  // Order info
+  const items=Array.isArray(lastOrder.items)?lastOrder.items:Object.values(lastOrder.items||{});
+  const itemStr=items.map(i=>i.qty+"× "+i.name).join(", ");
+  document.getElementById("tracking-order-info").innerHTML=
+    '<strong>'+itemStr+'</strong> · '+(lastOrder.freeApplied?'🎁 Gratuit':''+lastOrder.total.toFixed(2)+'€')
+    +(lastOrder.delivDate?' · 🚚 '+lastOrder.delivDate:'');
+
+  // Steps
+  const steps=[
+    {key:"pending",   icon:"⏳", label:"Commande reçue",    sub:"Votre commande a bien été enregistrée"},
+    {key:"making",    icon:"🔥", label:"En préparation",     sub:"On prépare vos cookies avec amour"},
+    {key:"ready",     icon:"✅", label:"Prête",              sub:"Votre commande est prête !"},
+    {key:"delivered", icon:"🚚", label:"Livrée",             sub:"Votre commande a été livrée"},
+    {key:"paid",      icon:"💶", label:"Payée",              sub:"Merci pour votre paiement !"},
+  ];
+  const order=["pending","making","ready","delivered","paid"];
+  const currentIdx=order.indexOf(lastOrder.status||"pending");
+  document.getElementById("tracking-steps").innerHTML=steps.map((s,i)=>{
+    const cls=i<currentIdx?"done":i===currentIdx?"active":"inactive";
+    return '<div class="tstep '+cls+'">'
+      +'<div class="tstep-icon">'+s.icon+'</div>'
+      +'<div><div class="tstep-label">'+s.label+'</div>'
+      +(i<=currentIdx?'<div class="tstep-sub">'+s.sub+'</div>':'')
+      +'</div></div>';
+  }).join("");
+
+  // Balance due
+  const crSnap=await get(ref(db,`credits/${key}`));
+  const bal=crSnap.exists()?(crSnap.val().solde||0):0;
+  const balDiv=document.getElementById("balance-due");
+  if(bal<0){
+    balDiv.classList.add("show");
+    balDiv.innerHTML='💳 Solde dû : <strong>'+Math.abs(bal).toFixed(2)+' €</strong> à régulariser';
+  } else {
+    balDiv.classList.remove("show");
+  }
+}
+
+async function loadFidelity(){
+  const snap=await get(ref(db,`fidelity/${sanitizeKey(clientName)}`));
+  fidData=snap.exists()?snap.val():{total:0,free:0};
+  renderFidelity();
+}
+
+function sanitizeKey(s){return s.toLowerCase().replace(/[.#$\[\]/]/g,"_")}
+
+function renderFidelity(){
+  if(!fidData){document.getElementById("fid-bar").classList.remove("show");return;}
+  document.getElementById("fid-bar").classList.add("show");
+  const bought=fidData.total%10, hasFree=fidData.free>0;
+  document.getElementById("fid-count").textContent=`${bought}/10 cookies`;
+  document.getElementById("fid-fill").style.width=`${bought*10}%`;
+  document.getElementById("fid-msg").textContent=hasFree?`Cookie offert disponible !`:`Plus que ${10-bought} cookie${10-bought>1?'s':''} pour un cookie offert 🎁`;
+  document.getElementById("fid-free").classList.toggle("show", hasFree);
+}
+
+// ── Quantités ─────────────────────────────────────────────────────────────
+window.changeQty=function(key,delta){
+  const c=cookies.find(x=>x._key===key); if(!c) return;
+  const max=c.stock!==undefined?c.stock:99;
+  cart[key]=Math.max(0,Math.min(max,(cart[key]||0)+delta));
+  if(!cart[key])delete cart[key];
+  renderGrid();
+  updateBar();
+};
+
+function totalItems(){return Object.values(cart).reduce((s,q)=>s+q,0)}
+function totalPrice(){
+  return Object.entries(cart).reduce((s,[k,q])=>{
+    const c=cookies.find(x=>x._key===k); return s+(c?c.price*q:0);
+  },0);
+}
+
+function updateBar(){
+  const n=totalItems(), p=totalPrice();
+  const hasFree=fidData&&fidData.free>0;
+  const bar=document.getElementById("bar");
+  if(n>0){
+    bar.style.display="flex";
+    document.getElementById("bar-qty").textContent=`${n} cookie${n>1?'s':''}${selectedDate?` · ${fmtDate(selectedDate)}`:''}`;
+    document.getElementById("bar-total").textContent=hasFree?`🎁 Gratuit · 0.00 €`:`${p.toFixed(2)} €`;
+    const btn=document.getElementById("btn-order");
+    btn.disabled=!selectedDate;
+    btn.textContent=selectedDate?"Commander →":"Choisir une date";
+  } else {
+    bar.style.display="none";
+  }
+}
+
+// ── Commander ─────────────────────────────────────────────────────────────
+document.getElementById("btn-order").onclick=async()=>{
+  const name=document.getElementById("inp-name").value.trim()||"Client anonyme";
+  const note=document.getElementById("inp-note").value.trim();
+  const items=Object.entries(cart).map(([key,qty])=>{
+    const c=cookies.find(x=>x._key===key);
+    return{key,name:c.name,emoji:c.emoji||'🍪',qty,price:c.price};
+  });
+  const hasFree=fidData&&fidData.free>0;
+  const total=hasFree?0:totalPrice();
+
+  const order={
+    client:name, clientKey:sanitizeKey(name.toLowerCase()),
+    items, note, total,
+    delivDate:selectedDate.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"}),
+    ts:Date.now(), status:"pending",
+    freeApplied:hasFree
+  };
+
+  // Enregistrer commande
+  await push(ref(db,"orders"), order);
+
+  // Déduire crédit si disponible
+  const crKey=sanitizeKey(name.toLowerCase());
+  const crSnap=await get(ref(db,`credits/${crKey}`));
+  if(crSnap.exists()){
+    const crData=crSnap.val();
+    const newSolde=Math.round(((crData.solde||0)-total)*100)/100;
+    const history=(crData.history||[]);
+    history.unshift({type:"debit",amount:total,ts:Date.now()});
+    await set(ref(db,`credits/${crKey}`),{...crData,solde:newSolde,history:history.slice(0,20)});
+    order.creditUsed=true;
+    order.creditAfter=newSolde;
+  }
+
+  // Mettre à jour stocks
+  for(const [key,qty] of Object.entries(cart)){
+    const c=cookies.find(x=>x._key===key);
+    if(c&&c.stock!==undefined){
+      await update(ref(db,`cookies/${key}`),{stock:Math.max(0,c.stock-qty)});
+    }
+  }
+
+  // Mettre à jour fidélité
+  const fKey=sanitizeKey(name.toLowerCase());
+  const cookiesOrdered=items.reduce((s,i)=>s+i.qty,0);
+  if(name!=="Client anonyme"){
+    const snap=await get(ref(db,`fidelity/${fKey}`));
+    const current=snap.exists()?snap.val():{total:0,free:0};
+    // Si commande gratuite, on ne compte pas les cookies dans la fidélité
+    const cookiesToCount=hasFree?0:cookiesOrdered;
+    const earnedFree=Math.floor((current.total+cookiesToCount)/10)-Math.floor(current.total/10);
+    const usedFree=hasFree?1:0;
+    await set(ref(db,`fidelity/${fKey}`),{
+      total:current.total+cookiesToCount,
+      free:Math.max(0,(current.free||0)+earnedFree-usedFree),
+      name
+    });
+  }
+
+  // Succès
+  document.getElementById("main").style.display="none";
+  let creditMsg="";
+  if(order.creditUsed){
+    const after=order.creditAfter;
+    creditMsg=after>=0
+      ?`<br><small style="color:var(--green)">💳 Solde restant : +${after.toFixed(2)} €</small>`
+      :`<br><small style="color:#c04040">💳 Solde : ${after.toFixed(2)} € (à régulariser)</small>`;
+  }
+  document.getElementById("s-sub").innerHTML=`Merci <strong>${name}</strong> ! Livraison prévue le <strong>${order.delivDate}</strong>. On prépare ça avec amour ✨${creditMsg}`;
+  if(hasFree){
+    document.getElementById("s-fid").style.display="block";
+    document.getElementById("s-fid").innerHTML="🎁 Votre cookie offert a bien été appliqué !";
+  }
+  document.getElementById("success").classList.add("show");
+};
+
+window.resetForm=function(){
+  Object.keys(cart).forEach(k=>delete cart[k]);
+  selectedDate=null; fidData=null; clientName="";
+  document.getElementById("inp-name").value="";
+  document.getElementById("inp-note").value="";
+  document.getElementById("bar").style.display="none";
+  document.getElementById("fid-bar").classList.remove("show");
+  document.getElementById("fid-free").classList.remove("show");
+  document.getElementById("s-fid").style.display="none";
+  document.querySelectorAll(".dbtn").forEach(b=>b.classList.remove("active"));
+  document.getElementById("success").classList.remove("show");
+  document.getElementById("main").style.display="block";
+  renderGrid();
+};
+
+window.openLbx=function(src,name){
+  document.getElementById("lbx-img").src=src;
+  document.getElementById("lbx-name").textContent=name||"";
+  document.getElementById("lbx").classList.add("show");
+};
+document.getElementById("lbx-close").addEventListener("click",()=>document.getElementById("lbx").classList.remove("show"));
+document.getElementById("lbx").addEventListener("click",e=>{if(e.target===document.getElementById("lbx"))document.getElementById("lbx").classList.remove("show");});
+</script>
+</body>
+</html>
